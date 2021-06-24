@@ -1,0 +1,52 @@
+* {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+}
+body, html {
+    width: 100%; height: 100%;
+}
+/* canvas { width: 100%; height: 100%; display: block } */
+#wrapper {
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 15rem auto ;
+    grid-template-rows: 3rem 10rem auto ;
+    grid-template-areas: "input output"
+                         "input graphs"
+                         "input canvas"; 
+    justify-items: start;
+    align-items: start;
+}
+    #form--simSett {
+        grid-area: input;
+        display: grid;
+        grid-template-columns: 10rem 5rem;
+        justify-items: stretch;
+        align-items: stretch;
+    }
+        #form--simSett > label, button {
+            grid-column: 1 / span 2;
+        }
+        #form--simSett > * {
+            margin-bottom: 1rem;
+        }
+
+    #outputs {
+        grid-area: output;
+    }
+        #outputs span {
+            display: inline-block;
+            width: 10rem;
+        }
+
+    #graphs {
+        width: 100%; height: 100%;
+        grid-area: graphs;
+        border-bottom: 1px solid black;
+    }
+
+    #canvas--wrapper {
+        grid-area: canvas;
+        width: 100%; height: 100%;
+        overflow: hidden;
+    }

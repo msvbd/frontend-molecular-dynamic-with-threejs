@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+	<link rel="stylesheet" href="css/style.css" defer>
+
+    <script src="three.js/build/three.min.js" defer></script>
+    <script src="three.js/build/OrbitControls.js" defer></script>
+    <script src="three.js/build/DragControls.js" defer></script>
+    <script src="three.js/build/DragControlsBody.js" defer></script>
+
+	<script src="js/md.js" defer></script>
+	<script src="js/svg.js" defer></script>
+	<script src="js/output.js" defer></script>
+	<script src="js/forms.js" defer></script>
+	<script src="js/useThreeJS.js" defer></script>
+	<script src="js/main.js" defer></script>
+
+</head>
+<body>
+    
+	<div id="wrapper">
+		<form id="form--simSett">
+
+			<label for="dimesnion">Dimension</label>
+			<select name="dimesnion" id="input--dimension">
+				<option value="2d">2D</option>
+				<option value="3d" selected>3D</option>
+			</select>
+
+			<label for="ensemble">Ensemble</label>
+			<select name="ensemble" id="input--ensemble">
+				<option value="nve">NVE</option>
+				<option value="npt">NPT</option>
+				<option value="nph" selected>NPH</option>
+				<option value="nvt">NVT</option>
+			</select>
+
+			<label for="sig">(LJ) sigma (-)</label>
+			<input type="range" min="1" max="8" step="0.1" name="sig__range" id="range--sig" oninput="sig__input.value=parseFloat(this.value)">
+			<input type="number" min="1" max="8" step="0.1" name="sig__input" id="input--sig" for="input--sig" oninput="sig__range.value=parseFloat(this.value)">
+			
+			<label for="eps">LJ epsilon (-)</label>
+			<input type="range" min="0" max="10" step="0.1" name="eps__range" id="range--eps" oninput="eps__input.value=parseFloat(this.value)">
+			<input type="number" min="0" max="10" step="0.1" name="eps__input" id="input--eps" for="input--eps" oninput="eps__range.value=parseFloat(this.value)">
+			
+			<label for="rc">Cutoff (-)</label>
+			<input type="range" min="1" max="20" step="0.1" name="rc__range" id="range--rc" oninput="rc__input.value=parseFloat(this.value)">
+			<input type="number" min="1" max="20" step="0.1" name="rc__input" id="input--rc" for="input--rc" oninput="rc__range.value=parseFloat(this.value)">
+	
+			<label for="temp">Teplota (-)</label>
+			<input type="range" min="0" max="5" step="0.1" name="temp__range" id="range--temp" oninput="temp__input.value=parseFloat(this.value)">
+			<input type="number" min="0" max="5" step="0.1" name="temp__input" id="input--temp" for="input--temp" oninput="temp__range.value=parseFloat(this.value)">
+	
+			<label for="press">Pressure (-)</label>
+			<input type="range" min="0" max="5" step="0.01" name="press__range" id="range--press" oninput="press__input.value=parseFloat(this.value)">
+			<input type="number" min="0" max="5" step="0.01" name="press__input" id="input--press" for="input--press" oninput="press__range.value=parseFloat(this.value)">
+	
+			<label for="nofp">Počet částic (-)</label>
+			<input type="range" min="1" max="512" step="1" name="nofp__range" id="range--nOfP" oninput="nofp__input.value=parseFloat(this.value);onInputNp(event)">
+			<input type="number" min="1" max="512" step="1" name="nofp__input" id="input--nOfP" for="input--nOfP" oninput="nofp__range.value=parseFloat(this.value);onInputNp(event)">
+	
+			<label for="lbox">L boxu (-)</label>
+			<input type="number" step="0.1" name="lbox" id="input--lbox" oninput="onInputLBox(event)">
+	
+			<label for="dens">Density (N/V)</label>
+			<input type="number" step="0.001" name="dens" id="input--dens"  oninput="onInputDens(event)">
+	
+			<button type="button" onclick="play()">Start</button> 
+			<button type="button" onclick="stop()">Stop Simulation</button>
+			<button type="button" onclick="playRender()">Render</button> 
+			<button type="button" onclick="stopRender()">Stop Render</button>
+		</form>
+
+		<div id="outputs">
+			<span id="output--teperature"></span>
+			<span id="output--PE"></span>
+			<span id="output--KE"></span>
+			<span id="output--Etot"></span>
+			<span id="output--PETail"></span>
+			<span id="output--PECoul"></span>
+			<span id="output--press"></span>
+		</div>
+
+		<div id="graphs">
+			<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="svg--graphs"></svg>
+		</div>
+
+		<div id="canvas--wrapper"></div>
+	</div>
+
+</body>
+</html>
