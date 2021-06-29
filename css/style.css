@@ -18,15 +18,33 @@ body, html {
     align-items: start;
 }
     #form--simSett {
+        max-height: 100%;
+        overflow-y: scroll;
         grid-area: input;
         display: grid;
         grid-template-columns: 10rem 5rem;
         justify-items: stretch;
         align-items: stretch;
     }
-        #form--simSett > label, button {
+        #form--simSett label, button, div {
             grid-column: 1 / span 2;
         }
+        #form--simSett > div {
+            display: grid;
+            grid-template-columns: 10rem 5rem;
+            justify-items: stretch;
+            align-items: stretch;
+        }
+        #form--simSett > #form__input--molecules {
+            display: block;
+        }
+            #form__input--molecules > div {
+                display: grid;
+                grid-template-columns: auto;
+                border-bottom: 1px solid black;
+                margin: 0.5rem;
+                padding: 0.2rem;
+            }
         #form--simSett > * {
             margin-bottom: 1rem;
         }

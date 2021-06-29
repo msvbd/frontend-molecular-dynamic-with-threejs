@@ -1,5 +1,6 @@
 
 function initAll() {
+    updateFormView()
     readInputForm()
     SimInit()
     ThreeJSInit()

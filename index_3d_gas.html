@@ -34,42 +34,66 @@
 
 			<label for="ensemble">Ensemble</label>
 			<select name="ensemble" id="input--ensemble">
-				<option value="nve">NVE</option>
+				<option value="nve" selected>NVE</option>
 				<option value="npt">NPT</option>
-				<option value="nph" selected>NPH</option>
+				<option value="nph">NPH</option>
 				<option value="nvt">NVT</option>
 			</select>
 
-			<label for="sig">(LJ) sigma (-)</label>
-			<input type="range" min="1" max="8" step="0.1" name="sig__range" id="range--sig" oninput="sig__input.value=parseFloat(this.value)">
-			<input type="number" min="1" max="8" step="0.1" name="sig__input" id="input--sig" for="input--sig" oninput="sig__range.value=parseFloat(this.value)">
-			
-			<label for="eps">LJ epsilon (-)</label>
-			<input type="range" min="0" max="10" step="0.1" name="eps__range" id="range--eps" oninput="eps__input.value=parseFloat(this.value)">
-			<input type="number" min="0" max="10" step="0.1" name="eps__input" id="input--eps" for="input--eps" oninput="eps__range.value=parseFloat(this.value)">
-			
-			<label for="rc">Cutoff (-)</label>
-			<input type="range" min="1" max="20" step="0.1" name="rc__range" id="range--rc" oninput="rc__input.value=parseFloat(this.value)">
-			<input type="number" min="1" max="20" step="0.1" name="rc__input" id="input--rc" for="input--rc" oninput="rc__range.value=parseFloat(this.value)">
+			<div id="form__input--temp">
+				<label for="temp">Teplota (-)</label>
+				<input type="range" min="0" max="5" step="0.1" name="temp__range" id="range--temp" oninput="temp__input.value=parseFloat(this.value)">
+				<input type="number" min="0" max="5" step="0.1" name="temp__input" id="input--temp" for="input--temp" oninput="temp__range.value=parseFloat(this.value)">
+			</div>
 	
-			<label for="temp">Teplota (-)</label>
-			<input type="range" min="0" max="5" step="0.1" name="temp__range" id="range--temp" oninput="temp__input.value=parseFloat(this.value)">
-			<input type="number" min="0" max="5" step="0.1" name="temp__input" id="input--temp" for="input--temp" oninput="temp__range.value=parseFloat(this.value)">
+			<div id="form__input--press">
+				<label for="press">Pressure (-)</label>
+				<input type="range" min="0" max="5" step="0.01" name="press__range" id="range--press" oninput="press__input.value=parseFloat(this.value)">
+				<input type="number" min="0" max="5" step="0.01" name="press__input" id="input--press" for="input--press" oninput="press__range.value=parseFloat(this.value)">
+			</div>
+
+
+			<div id="form__input--molecules">
+				<div>
+					<label for="nofp">Počet částic (-)</label>
+					<input type="number" min="1" max="512" step="1" name="nofp" value="50" oninput="onInputNp(event)">
+					
+					<label for="mol">molekula:</label><select name="mol">
+						<option value="Simple" selected>Simple</option>
+						<option value="Repulsive_only">Repulsive only</option>
+						<option value="Ar">Ar</option>
+						<option value="N2">Nitrogen</option>
+						<option value="H2O">Water</option>
+						<option value="CO2">Carbonedioxyd</option>
+						<option value="walls">walls</option>
+					</select>
+				</div>
+			</div>
+
+			<button type="button" onclick="addMolecule()">add molecule/atom</button> 
 	
-			<label for="press">Pressure (-)</label>
-			<input type="range" min="0" max="5" step="0.01" name="press__range" id="range--press" oninput="press__input.value=parseFloat(this.value)">
-			<input type="number" min="0" max="5" step="0.01" name="press__input" id="input--press" for="input--press" oninput="press__range.value=parseFloat(this.value)">
-	
-			<label for="nofp">Počet částic (-)</label>
+			<!-- <label for="nofp">Počet částic (-)</label>
 			<input type="range" min="1" max="512" step="1" name="nofp__range" id="range--nOfP" oninput="nofp__input.value=parseFloat(this.value);onInputNp(event)">
-			<input type="number" min="1" max="512" step="1" name="nofp__input" id="input--nOfP" for="input--nOfP" oninput="nofp__range.value=parseFloat(this.value);onInputNp(event)">
-	
-			<label for="lbox">L boxu (-)</label>
-			<input type="number" step="0.1" name="lbox" id="input--lbox" oninput="onInputLBox(event)">
+			<input type="number" min="1" max="512" step="1" name="nofp__input" id="input--nOfP" oninput="nofp__range.value=parseFloat(this.value);onInputNp(event)"> -->
 	
 			<label for="dens">Density (N/V)</label>
 			<input type="number" step="0.001" name="dens" id="input--dens"  oninput="onInputDens(event)">
-	
+
+			<label for="lbox">L boxu (-)</label>
+			<input type="number" step="0.1" name="lbox" id="input--lbox" oninput="onInputLBox(event)">	
+
+			<!-- <label for="sig">(LJ) sigma (-)</label>
+			<input type="range" min="1" max="8" step="0.1" name="sig__range" id="range--sig" oninput="sig__input.value=parseFloat(this.value)">
+			<input type="number" min="1" max="8" step="0.1" name="sig__input" id="input--sig" oninput="sig__range.value=parseFloat(this.value)">
+			
+			<label for="eps">LJ epsilon (-)</label>
+			<input type="range" min="0" max="10" step="0.1" name="eps__range" id="range--eps" oninput="eps__input.value=parseFloat(this.value)">
+			<input type="number" min="0" max="10" step="0.1" name="eps__input" id="input--eps" oninput="eps__range.value=parseFloat(this.value)">
+			
+			<label for="rc">Cutoff (-)</label>
+			<input type="range" min="1" max="20" step="0.1" name="rc__range" id="range--rc" oninput="rc__input.value=parseFloat(this.value)">
+			<input type="number" min="1" max="20" step="0.1" name="rc__input" id="input--rc" oninput="rc__range.value=parseFloat(this.value)"> -->
+
 			<button type="button" onclick="play()">Start</button> 
 			<button type="button" onclick="stop()">Stop Simulation</button>
 			<button type="button" onclick="playRender()">Render</button> 

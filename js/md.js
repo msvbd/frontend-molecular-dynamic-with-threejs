@@ -1,6 +1,5 @@
 // globals
-var atoms = [];
-var walls = [];
+var molecules = [];
 
 var ensenble = "nvt"
 var dimension = "2d"
@@ -19,6 +18,15 @@ var Lbox = new THREE.Vector3(Lbox, Lbox, Lbox)
 var simBox = {}
 
 var time = 0;
+
+// Atom Class
+class Molecule {
+    constructor(atoms, bonds, bends) {
+        this.atoms = atoms,
+        this.bonds = bonds,
+        this.bends = bends
+    }
+}
 
 // Atom Class
 class Atom {
@@ -47,7 +55,7 @@ function SimInit() {
     //Lbox.z = Nl*rm
     setInputForm()
 
-    atoms = []
+    molecules = []
 
     let Nact = 0
     let totQ = 0.0, q = 0.0
@@ -60,7 +68,7 @@ function SimInit() {
                 Totvec.add(vec)
                 q = Math.random()
                 totQ += q
-                atoms.push( new Atom(new THREE.Vector3(-Nlp+i*rm , -Nlp+j*rm , 0.0),
+                molecules.push( new Atom(new THREE.Vector3(-Nlp+i*rm , -Nlp+j*rm , 0.0),
                                     vec, q,  sig, eps)
                         )
                 Nact++
@@ -77,7 +85,7 @@ function SimInit() {
                     Totvec.add(vec)
                     q = Math.random()
                     totQ += q
-                    atoms.push( new Atom(new THREE.Vector3(-Nlp+i*rm , -Nlp+j*rm , -Nlp+k*rm),
+                    molecules.push( new Atom(new THREE.Vector3(-Nlp+i*rm , -Nlp+j*rm , -Nlp+k*rm),
                                         vec, q)
                             )
                     Nact++
@@ -88,11 +96,11 @@ function SimInit() {
             if(Nact >= Np) break
         }
     }
-    totQ /= atoms.length
-    Totvec.divideScalar(atoms.length)
-    for (let i = 0; i < atoms.length; i++) {
-        atoms[i].v.sub(Totvec)
-        atoms[i].q -= totQ
+    totQ /= molecules.length
+    Totvec.divideScalar(molecules.length)
+    for (let i = 0; i < molecules.length; i++) {
+        molecules[i].v.sub(Totvec)
+        molecules[i].q -= totQ
     }
 
     //thermostat()
@@ -101,11 +109,11 @@ function SimInit() {
 
 function getActTemp() {
     let totVSq = 0.0 // tot sum v^2
-    for (let i = 0; i < atoms.length; i++) { // loop throw atoms
-        //totVSq += atoms[i].v.dot(atoms[i].v) // compute sum v^2
-        totVSq += atoms[i].v.lengthSq() // compute sum v^2
+    for (let i = 0; i < molecules.length; i++) { // loop throw molecules
+        //totVSq += molecules[i].v.dot(molecules[i].v) // compute sum v^2
+        totVSq += molecules[i].v.lengthSq() // compute sum v^2
     }
-    totVSq /= (3*atoms.length-3) // sum v^2 / DoF
+    totVSq /= (3*molecules.length-3) // sum v^2 / DoF
 
     return totVSq
 }
@@ -119,15 +127,15 @@ function thermostat() { // scale temperature
 function ScaleVelocitiesThermostat() { // Scale Velocities Thermostat
     let fact = Math.sqrt(temp/tempAct)
 
-    for (let i = 0; i < atoms.length; i++) { // loop throw atoms
-        atoms[i].v.multiplyScalar(fact)
+    for (let i = 0; i < molecules.length; i++) { // loop throw molecules
+        molecules[i].v.multiplyScalar(fact)
     }
 }
 
 function FrictionThermostat() { // Friction (Berendsen) Thermostat
     let xi = Math.sqrt(1.0 + 0.01*(temp/tempAct - 1.0))
-    for (let i = 0; i < atoms.length; i++) { // loop throw atoms
-        atoms[i].v.multiplyScalar(xi)
+    for (let i = 0; i < molecules.length; i++) { // loop throw molecules
+        molecules[i].v.multiplyScalar(xi)
     }
 }
 
@@ -144,8 +152,8 @@ function FrictionBarostat() {  // Friction (Berendsen) Barostat
     let eta = Math.cbrt(1.0 - 0.0002*(press - pressAct))
     Lbox.multiplyScalar(eta)
     simBox.setFromObject(createSimBox())
-    for (let i = 0; i < atoms.length; i++) { // loop throw atoms
-        atoms[i].r.multiplyScalar(eta)
+    for (let i = 0; i < molecules.length; i++) { // loop throw molecules
+        molecules[i].r.multiplyScalar(eta)
     }
     //setInputForm()
     //onInputLBox(null)
@@ -180,11 +188,11 @@ function pbc(rij) {
 }
 
 function force() {
-    const n = atoms.length;
+    const n = molecules.length;
     let i, j, rij, fc, rijsq;
 
     for (i = 0; i < n; i++) {
-        atoms[i].a.set(0,0,0)
+        molecules[i].a.set(0,0,0)
     }
 
     PEAct = 0
@@ -192,18 +200,18 @@ function force() {
     pressAct = 0
     for (i = 0; i < n-1; i++) {
         for (j = i+1; j < n; j++) {
-            rij = new THREE.Vector3().subVectors(atoms[i].r , atoms[j].r)
+            rij = new THREE.Vector3().subVectors(molecules[i].r , molecules[j].r)
             rij.sub( pbc(rij));
             if(rij > rcutsq) continue
             rijsq = rij.lengthSq()
             let tmp = lj_f(rijsq)
-            tmp += coul_f(atoms[i].q, atoms[j].q, rijsq)
+            tmp += coul_f(molecules[i].q, molecules[j].q, rijsq)
             PEAct += lj_u(rijsq)
-            PECoulAct += coul_u(atoms[i].q, atoms[j].q, rijsq)
-            PEAct += coul_u(atoms[i].q, atoms[j].q, rijsq)
+            PECoulAct += coul_u(molecules[i].q, molecules[j].q, rijsq)
+            PEAct += coul_u(molecules[i].q, molecules[j].q, rijsq)
             fc = rij.normalize().multiplyScalar(tmp)
-            atoms[i].a.add(fc.multiplyScalar(1))
-            atoms[j].a.add(fc.multiplyScalar(-1))
+            molecules[i].a.add(fc.multiplyScalar(1))
+            molecules[j].a.add(fc.multiplyScalar(-1))
             pressAct += rij.dot(fc)
         }
     }
@@ -224,32 +232,32 @@ function force() {
 
 
 function newPosition() {
-    const n = atoms.length;
+    const n = molecules.length;
     let i;
 
     for (i = 0; i < n; i++) {
-        atoms[i].r.add(new THREE.Vector3().copy(atoms[i].v).multiplyScalar(dt))
-                    .add(new THREE.Vector3().copy(atoms[i].a).multiplyScalar(0.5*dt**2))
-        atoms[i].r.sub(pbc(atoms[i].r))
+        molecules[i].r.add(new THREE.Vector3().copy(molecules[i].v).multiplyScalar(dt))
+                    .add(new THREE.Vector3().copy(molecules[i].a).multiplyScalar(0.5*dt**2))
+        molecules[i].r.sub(pbc(molecules[i].r))
     }
 
     if(ensenble=="npt" || ensenble=="nph") barostat()
 }
 
 function newVelocity() {
-    const n = atoms.length;
+    const n = molecules.length;
     let i;
 
     KEAct = 0;
     let vSizes = []
     for (i = 0; i < n; i++) {
-        atoms[i].v.add(new THREE.Vector3().copy(atoms[i].a).add(atoms[i].ap).multiplyScalar(0.5*dt) )
+        molecules[i].v.add(new THREE.Vector3().copy(molecules[i].a).add(molecules[i].ap).multiplyScalar(0.5*dt) )
 
-        KEAct += 0.5*atoms[i].v.lengthSq();
+        KEAct += 0.5*molecules[i].v.lengthSq();
 
-        atoms[i].ap.copy(atoms[i].a)
+        molecules[i].ap.copy(molecules[i].a)
 
-        vSizes.push(atoms[i].v.length())
+        vSizes.push(molecules[i].v.length())
     }
     KEAct /= n
 

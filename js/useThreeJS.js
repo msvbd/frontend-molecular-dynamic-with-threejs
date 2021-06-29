@@ -93,15 +93,15 @@ function createMeshes() {
     scene.add( simBox );
     //simBox.add(createSimBox())
 
-    //for (var part of atoms) {
-    for (let i = 0; i < atoms.length; i++) {
+    //for (var part of molecules) {
+    for (let i = 0; i < molecules.length; i++) {
         const particle = new THREE.Mesh(
             geometries.atom,
             materials.atom
         );
         // console.log(particle)
-        particle.position.set(...Object.values(atoms[i].r));
-        atoms[i].r = particle.position;
+        particle.position.set(...Object.values(molecules[i].r));
+        molecules[i].r = particle.position;
 
         scene.add(particle);
         //dragObjects.push(particle);
