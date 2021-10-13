@@ -17,90 +17,148 @@
 	<script src="js/svg.js" defer></script>
 	<script src="js/output.js" defer></script>
 	<script src="js/forms.js" defer></script>
+	<script src="js/help.js" defer></script>
 	<script src="js/useThreeJS.js" defer></script>
 	<script src="js/main.js" defer></script>
-
 </head>
 <body>
     
 	<div id="wrapper">
 		<form id="form--simSett">
 
-			<label for="dimesnion">Dimension</label>
-			<select name="dimesnion" id="input--dimension">
-				<option value="2d">2D</option>
-				<option value="3d" selected>3D</option>
-			</select>
+			<div>
+				<h3>Rozměr
+					<span class="helpIcon">
+						<div class="helpText">
+							<p>Vyberte počet rozměrů simulace.</p>
+							<p>Trojrozměrný prostor (3D) je realističtější, ale výpočetně ráročnější pro větší počet částic.</p>
+							<p>Dvojrozměrný prostor (2D) může být pro mnoho situací názornější.</p>
+						</div>
+					</span>
+				</h3>
+				<label for="dim_2d">2D</label>
+				<input type="radio" id="dim_2d" name="dimesnion" value="2d">
+				<label for="dim_3d">3D</label>
+				<input type="radio" id="dim_3d" name="dimesnion" value="3d" checked>
+			</div>
 
-			<label for="ensemble">Ensemble</label>
-			<select name="ensemble" id="input--ensemble">
-				<option value="nve" selected>NVE</option>
-				<option value="npt">NPT</option>
-				<option value="nph">NPH</option>
-				<option value="nvt">NVT</option>
-			</select>
+			<div>
+				<h3>Statistický soubor
+					<span class="helpIcon">
+						<div class="helpText">
+							<p>Vyberte statistický soubor. [<a href="https://en.wikipedia.org/wiki/Statistical_ensemble_(mathematical_physics)">wiki</a>]. Prakticky to znamená vybrat za jakých podmínek děj probíha. Písmeno N odkazuje na počet částic, V objem, E energii, P tlak, Pz tlak ve směru osy z (tj. tlačíme na systém zezhora). V názvu souboru pak vybíráme trojici těchto veličit, které se zachovávají, tj. jsou během děje neměnné.</p>
+							<ul>
+								<li>NVE - znamená, že během děje se nemění počet částic (atomů, molekul, atd.), tj. množství plynu je stále stejné.  Energie plynu je stále stejné, tj. plyn je dobře tepelně izolován.</li>
+								<li>NPT - znamená, že během děje se nemění (N) počet částic (atomů, molekul, atd.), tj. množství plynu je stále stejné. Plyn je uzavřen v nádobě, jejíž objem se může měnit pod tlakem z okolí (P). Teplota plynu je stále stejná (T).</li>
+								<li>NVT - znamená, že během děje se nemění (N) počet částic (atomů, molekul, atd.), tj. množství plynu je stále stejné. Plyn je uzavřen v nádobě o neměnném objemu (V). Teplota plynu je stále stejná (T).</li>
+								<li>NPH - znamená, že během děje se nemění (N) počet částic (atomů, molekul, atd.), tj. množství plynu je stále stejné. Plyn je uzavřen v nádobě, jejíž objem se může měnit pod tlakem z okolí (P). V důsledku změny objemu nádoby během děje dochází ke změně teploty a zároveň ke změne vnitřní energie částic. V termodynamice zavádíme další "energie" a jedním z nich je entalpie (H), která se zachovává zde. Pro pochopení tohoto souboru není třeba chápat co je enetalpie, stačí myslet na to, že se nemění počet částic a že v důsledku změny objemu se mění teplota částic. Například při dějích, které proběhnou tak rychle, že si plyn nestihne vyměnit teplo s okolím a nebo v dobře tepelně izolovaných systémech, tak jako v souboru NVE.</li>
+								<li>*Pz* wall - Tyto systémy jsou zespoda a zezhora ohraničeny stěnou (wall). Přičemž na horní stěnu je tlačeno tlakem Pz. Ostatní písmenka znamejí totéž co výše.</li>
+							</ul>
+						</div>
+					</span>
+				</h3>
+				<label for="ensemble_nve">NVE</label>
+				<input type="radio" name="ensemble" id="ensemble_nve" value="nve" checked>
+
+				<label for="ensemble_npt">NPT</label>
+				<input type="radio" name="ensemble" id="ensemble_npt" value="npt">
+
+				<label for="ensemble_npzt_wall">NPzT wall</label>
+				<input type="radio" name="ensemble" id="ensemble_npzt_wall" value="npzt_wall">
+
+				<label for="ensemble_nph">NPH</label>
+				<input type="radio" name="ensemble" id="ensemble_nph" value="nph">
+
+				<label for="ensemble_npzh_wall">NPH wall</label>
+				<input type="radio" name="ensemble" id="ensemble_npzh_wall" value="npzh_wall">
+
+				<label for="ensemble_nvt">NVT</label>
+				<input type="radio" name="ensemble" id="ensemble_nvt" value="nvt">
+			</div>
 
 			<div id="form__input--temp">
-				<label for="temp">Teplota (-)</label>
-				<input type="range" min="0" max="5" step="0.1" name="temp__range" id="range--temp" oninput="temp__input.value=parseFloat(this.value)">
-				<input type="number" min="0" max="5" step="0.1" name="temp__input" id="input--temp" for="input--temp" oninput="temp__range.value=parseFloat(this.value)">
+				<label for="range--temp">Teplota (-)
+					<span class="helpIcon">
+						<div class="helpText">
+							<p>Nastavte teplotu při které děj probýhá.</p>
+						</div>
+					</span>
+				</label>
+				<input type="range"  min="0" max="5" step="0.1" name="temp__range" id="range--temp" oninput="temp__input.value=parseFloat(this.value)">
+				<input type="number" min="0" max="5" step="0.1" name="temp__input" id="input--temp" oninput="temp__range.value=parseFloat(this.value)">
 			</div>
 	
 			<div id="form__input--press">
-				<label for="press">Pressure (-)</label>
-				<input type="range" min="0" max="5" step="0.01" name="press__range" id="range--press" oninput="press__input.value=parseFloat(this.value)">
-				<input type="number" min="0" max="5" step="0.01" name="press__input" id="input--press" for="input--press" oninput="press__range.value=parseFloat(this.value)">
+				<label for="range--press">Tlak (-)
+					<span class="helpIcon">
+						<div class="helpText">
+							<p>Nastavte tlak při kterém děj probýhá.</p>
+						</div>
+					</span>
+				</label>
+				<input type="range"  min="0" max="5" step="0.01" name="press__range" id="range--press" oninput="press__input.value=parseFloat(this.value)">
+				<input type="number" min="0" max="5" step="0.01" name="press__input" id="input--press" oninput="press__range.value=parseFloat(this.value)">
 			</div>
 
 
 			<div id="form__input--molecules">
 				<div>
-					<label for="nofp">Počet částic (-)</label>
+					<label for="nofp">Počet částic (-)
+						<span class="helpIcon">
+							<div class="helpText">
+								<p>Nastavte počet částic v simulovaném systému.</p>
+							</div>
+						</span>
+					</label>
 					<input type="number" min="1" max="512" step="1" name="nofp" value="50" oninput="onInputNp(event)">
 					
-					<label for="mol">molekula:</label><select name="mol">
+					<label for="mol">Molekula:
+						<span class="helpIcon">
+							<div class="helpText">
+								<p>Zvolte druh molekuly.</p>
+							</div>
+						</span>
+					</label>
+					<select name="molecules" id="mol">
 						<option value="Simple" selected>Simple</option>
 						<option value="Repulsive_only">Repulsive only</option>
+						<!-- <option value="Dimer">Dimer</option>
+						<option value="Water">Water</option> -->
 						<option value="Ar">Ar</option>
-						<option value="N2">Nitrogen</option>
-						<option value="H2O">Water</option>
-						<option value="CO2">Carbonedioxyd</option>
-						<option value="walls">walls</option>
+						<!-- <option value="N2">Nitrogen</option>
+						<option value="CO2">Carbonedioxyd</option> -->
 					</select>
 				</div>
 			</div>
 
-			<button type="button" onclick="addMolecule()">add molecule/atom</button> 
-	
-			<!-- <label for="nofp">Počet částic (-)</label>
-			<input type="range" min="1" max="512" step="1" name="nofp__range" id="range--nOfP" oninput="nofp__input.value=parseFloat(this.value);onInputNp(event)">
-			<input type="number" min="1" max="512" step="1" name="nofp__input" id="input--nOfP" oninput="nofp__range.value=parseFloat(this.value);onInputNp(event)"> -->
-	
-			<label for="dens">Density (N/V)</label>
+			<button type="button" onclick="addMolecule()">Přidat molekulu/atom</button> 
+
+			<label for="dens">Hustota (N/V)
+				<span class="helpIcon">
+					<div class="helpText">
+						<p>Nastavte hustotu simulovaného systému.</p>
+						<p>Velikost simulovaného systému a hustota jsou navzájem propojeny.</p>
+					</div>
+				</span>
+			</label>
 			<input type="number" step="0.001" name="dens" id="input--dens"  oninput="onInputDens(event)">
 
-			<label for="lbox">L boxu (-)</label>
+			<label for="lbox">Velikost boxu (-)
+				<span class="helpIcon">
+					<div class="helpText">
+						<p>Nastavte velikost simulovaného systému.</p>
+						<p>Velikost simulovaného systému a hustota jsou navzájem propojeny.</p>
+					</div>
+				</span>
+			</label>
 			<input type="number" step="0.1" name="lbox" id="input--lbox" oninput="onInputLBox(event)">	
 
-			<!-- <label for="sig">(LJ) sigma (-)</label>
-			<input type="range" min="1" max="8" step="0.1" name="sig__range" id="range--sig" oninput="sig__input.value=parseFloat(this.value)">
-			<input type="number" min="1" max="8" step="0.1" name="sig__input" id="input--sig" oninput="sig__range.value=parseFloat(this.value)">
-			
-			<label for="eps">LJ epsilon (-)</label>
-			<input type="range" min="0" max="10" step="0.1" name="eps__range" id="range--eps" oninput="eps__input.value=parseFloat(this.value)">
-			<input type="number" min="0" max="10" step="0.1" name="eps__input" id="input--eps" oninput="eps__range.value=parseFloat(this.value)">
-			
-			<label for="rc">Cutoff (-)</label>
-			<input type="range" min="1" max="20" step="0.1" name="rc__range" id="range--rc" oninput="rc__input.value=parseFloat(this.value)">
-			<input type="number" min="1" max="20" step="0.1" name="rc__input" id="input--rc" oninput="rc__range.value=parseFloat(this.value)"> -->
-
-			<button type="button" onclick="play()">Start</button> 
-			<button type="button" onclick="stop()">Stop Simulation</button>
+			<button type="button" id="button--playStop" onclick="playStop()">Play</button> 
 			<button type="button" onclick="playRender()">Render</button> 
 			<button type="button" onclick="stopRender()">Stop Render</button>
 		</form>
 
-		<div id="outputs">
+<!-- 		<div id="outputs">
 			<span id="output--teperature"></span>
 			<span id="output--PE"></span>
 			<span id="output--KE"></span>
@@ -108,11 +166,13 @@
 			<span id="output--PETail"></span>
 			<span id="output--PECoul"></span>
 			<span id="output--press"></span>
-		</div>
+		</div> -->
 
 		<div id="graphs">
-			<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="svg--graphs"></svg>
+			<!-- svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="svg--graphs"></svg> -->
 		</div>
+
+		<div id="help" class=""></div>
 
 		<div id="canvas--wrapper"></div>
 	</div>

@@ -10,9 +10,8 @@ body, html {
     width: 100%; height: 100%;
     display: grid;
     grid-template-columns: 15rem auto ;
-    grid-template-rows: 3rem 10rem auto ;
-    grid-template-areas: "input output"
-                         "input graphs"
+    grid-template-rows: 12rem auto ;
+    grid-template-areas: "input graphs"
                          "input canvas"; 
     justify-items: start;
     align-items: start;
@@ -61,10 +60,100 @@ body, html {
         width: 100%; height: 100%;
         grid-area: graphs;
         border-bottom: 1px solid black;
+        overflow-y: scroll;
+        padding: 0.5rem;
     }
+        #graphs .graphs__div--graph {
+            display: inline-block;
+            height: 150px;
+            margin: 0.2rem;
+            border: 1px solid gray;
+            box-shadow: 2px 2px 5px gray;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        #graphs svg {
+            display: inline-block;
+            transition: width 0.5s ease-in-out 0s
+        }
+        #graphs .graph--head {
+            display: inline-block;
+            writing-mode: vertical-lr;
+            text-orientation:sideways;
+            transform: rotate(180deg);
+            text-align: center;
+            background-color: #ddd;
+            height: 145px;
+        }
 
     #canvas--wrapper {
         grid-area: canvas;
         width: 100%; height: 100%;
         overflow: hidden;
+        cursor: crosshair !important;
     }
+        #canvas--wrapper canvas{
+            cursor: crosshair !important;
+        }
+/* help */
+#help {
+    position: absolute;
+    left: 2.5%;
+    width: 95%;
+    height: 45%;
+    background-color:rgb(226, 247, 255);
+    border: 2px solid skyblue;
+    box-shadow: gray 5px 5px 5px;
+    font-weight: normal;
+    font-size: 1rem;
+    color: black;
+    padding: 2rem;
+    z-index: 100;
+    transition: ease-in-out 0.25s;
+    text-align: justify;
+    opacity: 0;
+    visibility: hidden;
+}
+.top { top:2%; }
+.bottom { bottom:2%; }
+#help.visible { opacity: 1; visibility: visible; }
+
+.helpIcon {
+    background-color: rgb(173, 214, 253);
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    border-radius: 50%;
+}
+.helpIcon::before {
+    content: "\24D8";
+    color: rgb(97, 97, 97);
+    font-size: 1rem;
+    font-weight: bold;
+}
+/* .helpText {
+    visibility: hidden;
+    opacity: 0;
+    background-color:rgb(226, 247, 255);
+    border: 2px solid skyblue;
+    box-shadow: gray 5px 5px 5px;
+    font-weight: normal;
+    font-size: 1rem;
+    color: black;
+    position: absolute;
+    top: 10px;
+    left: 2.5%;
+    width: 95%;
+    padding: 2rem;
+    z-index: 100;
+    transition: ease-in-out 0.25s;
+    text-align: justify;
+} */
+/* .helpIcon:hover #help {
+    opacity: 1; 
+} */
+/* .visible .helpText {
+    visibility: visible;
+    opacity: 1;
+} */

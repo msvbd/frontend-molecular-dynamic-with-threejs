@@ -1,10 +1,15 @@
 
 function initAll() {
-    updateFormView()
+    if(renderer) stopRender()
+    time = 0
     readInputForm()
     SimInit()
     ThreeJSInit()
     render()
+    OutputInit()
+    update(1)
+    printOutput()
+    playRender()
 }
 
 // if WebGL is supported
@@ -24,9 +29,11 @@ if ( window.WebGLRenderingContext ) {
     var dragControls;
     var dragControlsBody;
     var dragObjects = [];
-    var playSim = true;
+    var playSim = false;
 
     setInputForm()
+
+    Helper.initHelps()
 
     initAll()
 
@@ -39,3 +46,11 @@ if ( window.WebGLRenderingContext ) {
     var warning = WEBGL.getWebGLErrorMessage();
     console.log(Error);
 }
+
+
+/* let helps = document.getElementsByClassName("helpIcon");
+for (const h of helps) {
+    h.addEventListener("click", (e) => {
+        e.currentTarget.classList.add("visible")
+    })
+} */
