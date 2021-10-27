@@ -16,13 +16,16 @@ var PECoulAct = 0
 var densAct = dens
 var pressAct = press
 var vDist = [0]
+var clearAndInitSvg
 
 /* var timeSeriesHelper = []
 var reductionConstant = dt */
 var nReduce = 100
 
-const clearAndInitSvg = SvgClosure()
-clearAndInitSvg()
+function output_init() {
+    clearAndInitSvg = SvgClosure()
+    clearAndInitSvg()
+}
 
 function OutputInit() {
     timeInTime = []

@@ -1,8 +1,8 @@
 [package]
-name = "hello-wasm"
+name = "md-wasm"
 version = "0.1.0"
 authors = ["MSvbd"]
-description = "A sample project with wasm-pack"
+description = "MD simulation functions."
 license = "MIT/Apache-2.0"
 repository = ""
 edition = "2018"

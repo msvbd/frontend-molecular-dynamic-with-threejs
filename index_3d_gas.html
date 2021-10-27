@@ -20,6 +20,17 @@
 	<script src="js/help.js" defer></script>
 	<script src="js/useThreeJS.js" defer></script>
 	<script src="js/main.js" defer></script>
+	<script type="module" defer>
+		import MyWSInit, * as MyWSModule from "./wasm/pkg/md_wasm.js";
+		MyWSInit()
+		  .then(() => {
+			//MyWSModule.greet("WebAssembly")
+			init_wasm(MyWSModule)
+			output_init()
+			main()
+			console.log("WASM is ready")
+		  });
+	</script>
 </head>
 <body>
     
