@@ -93,15 +93,25 @@ function getNp(input) {
     return Np
 }
 
+function readTempInputFrom() {
+    let input = getFormsInputs()
+    temp = Number(input.temp.value)
+}
+
+function readPressInputFrom() {
+    let input = getFormsInputs()
+    press = Number(input.press.value)
+}
+
 function readInputForm() {
     let input = getFormsInputs()
     //console.log(input)
 
     //console.log("Read Input Form")
     //sig = Number(input.sig.value)
+    readTempInputFrom()
+    readPressInputFrom()
     //eps = Number(input.eps.value)
-    temp = Number(input.temp.value)
-    press = Number(input.press.value)
     dens = Number(input.dens.value)
 
     mols = getMols(input)
@@ -135,6 +145,7 @@ function readInputForm() {
 function onInputDens(event) {
     let input = getFormsInputs()
     input.lbox.value = Math.pow(Np/parseFloat(event.target.value), 1/3)
+    stop()
     readInputForm()
 }
 
@@ -142,16 +153,18 @@ function onInputLBox(event) {
     let input = getFormsInputs()
     //input.dens.value = input.nofp.value/Math.pow(parseFloat(event.target.value), 3)
     input.dens.value = Np/Math.pow(parseFloat(input.lbox.value), 3)
+    stop()
     readInputForm()
 }
 
 function onInputNp(event) {
     let input = getFormsInputs()
     input.lbox.value = Math.pow(getNp(input)/parseFloat(input.dens.value), 1/3)
+    stop()
     readInputForm()
 }
 
-function addMolecule() {
+/* function addMolecule() {
     const mols = document.getElementById("form__input--molecules")
     const id = mols.childElementCount + 1 
     let div = mols.querySelector("div").cloneNode(true)
@@ -165,7 +178,7 @@ function addMolecule() {
     button.addEventListener("click", removeMolecule)
     div.appendChild(button)
 
-    mols.appendChild(div)
+    mols.insertBefore(div, mols.querySelector('button.button--addMolecule'))
 
     initAll()
 }
@@ -173,4 +186,4 @@ function addMolecule() {
 function removeMolecule(event) {
     document.getElementById("form__input--molecules").removeChild(event.target.parentNode)
     initAll()
-}
+} */

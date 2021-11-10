@@ -3,7 +3,7 @@ const SvgClosure = function() {
     //const svg = document.getElementById('svg--graphs')
     //const wSvg = svg.clientWidth
     //const hSvg = svg.clientHeight
-    let wSvg = 0, hSvg = 0, svg
+    let wSvg = 0, hSvg = 0, svg, id = 0
     let isInit = false
     let divs = []
     let globalLabel = ""
@@ -43,55 +43,51 @@ const SvgClosure = function() {
         return path
     }
 
-    function* divGenerator() {
-        let id = 0
-        while (true) {
-            if(isInit) {
-                if(id >= divs.length) id = 0
-                yield divs[id].lastChild
-            } else {
-                let div = document.createElement("div")
-                div.setAttribute("class", "graphs__div--graph")
-                div.dataset.id = id
-                div.addEventListener("click", () => {
-                    let svg = event.currentTarget.lastChild
-                    if(svg.getAttribute("width") == "250px") {
-                        svg.setAttribute("width", "0px")
-                    } else {
-                        svg.setAttribute("width", "250px")
-                    }
-                })
-                let header = document.createElement("header")
-                header.setAttribute("class", "graph--head")
-                header.innerText = globalLabel
-                header.innerHTML += ' <span class="helpIcon"><div class="helpText"><p>Vyberte počet rozměrů simulace.</p><p>Trojrozměrný prostor (3D) je realističtější, ale výpočetně ráročnější pro větší počet částic.</p><p>Dvojrozměrný prostor (2D) může být pro mnoho situací názornější.</p></div></span>'
+    function getDiv(help) {
+        id++
+     
+        if(isInit) {
+            if(id >= divs.length) id = 0
+            return divs[id].lastChild
+        } else {
+            let div = document.createElement("div")
+            div.setAttribute("class", "graphs__div--graph")
+            div.dataset.id = id
+            div.addEventListener("click", () => {
+                let svg = event.currentTarget.lastChild
+                if(svg.getAttribute("width") == "250px") {
+                    svg.setAttribute("width", "0px")
+                } else {
+                    svg.setAttribute("width", "250px")
+                }
+            })
+            let header = document.createElement("header")
+            header.setAttribute("class", "graph--head")
+            header.innerText = globalLabel
+            header.innerHTML += ' <span class="helpIcon"><div class="helpText">'+help+'</div></span>'
 
-                div.appendChild(header)
+            div.appendChild(header)
 
-                svg = document.createElementNS(svgNameSpace,'svg')
-                svg.setAttribute("width", "250px")
-                svg.setAttribute("height", "150px")
-                svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
-                div.appendChild(svg)
-                graphs.appendChild(div)
-                wSvg = 250//svg.clientWidth + 20
-                hSvg = 150//svg.clientHeight + 0
-                //console.log(wSvg, hSvg)
+            svg = document.createElementNS(svgNameSpace,'svg')
+            svg.setAttribute("width", "0px")
+            svg.setAttribute("height", "150px")
+            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+            div.appendChild(svg)
+            graphs.appendChild(div)
+            wSvg = 250//svg.clientWidth + 20
+            hSvg = 150//svg.clientHeight + 0
+            //console.log(wSvg, hSvg)
 
-                divs.push(div)
-                yield svg
-            }   
-            id++
-        }
+            divs.push(div)
+            return svg
+        }   
     }
 
-    getDiv = divGenerator()
-
-    function plotGraph(offset,data, label) {
+    function plotGraph(offset,data, label, help) {
         
         //plotSomething(offset, label)
         globalLabel = label
-        svg = getDiv.next().value
+        svg = getDiv(help)
    
         /* axes */
         let line = ''
@@ -157,10 +153,10 @@ const SvgClosure = function() {
         svg.appendChild(text)
     }
 
-    function plotDist(offset,data, label) {
+    function plotDist(offset,data, label, help) {
                 
         globalLabel = label
-        svg = getDiv.next().value
+        svg = getDiv(help)
         //<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="svg--graphs"></svg>
 
         /* axes */
@@ -201,13 +197,13 @@ const SvgClosure = function() {
     function initSvg() {
         offsetX = 80
         offsetY = 10
-        plotDist([40,offsetY], vDistInTime, "dist(v)")
-        plotGraph([offsetX,offsetY], tempInTime, "T")
-        plotGraph([offsetX,offsetY], PEInTime, "PE")
-        plotGraph([offsetX,offsetY], KEInTime, "KE")
-        plotGraph([offsetX,offsetY], EtotInTime, "Etot")
-        plotGraph([offsetX,offsetY], pressInTime, "P")
-        plotGraph([offsetX,offsetY], densInTime, "dens")
+        plotDist([40,offsetY], vDistInTime, "Distribuce rychlostí", '<p>Distribuce rychlostí ukazuje jaký podíl částic má jakou rychlost. Po čase by se měla distribuce ustálit a již se příliž neměnit. Distribuce by měla odpovídat Maxwelovu-Boltzmanuvu rozdělení rychlostí.</p>')
+        plotGraph([offsetX,offsetY], tempInTime, "T(t)", "<p>Graf závislosti teploty na čase. Teplota by se měla ustálit na rovnovážné hodnotě, popř. na hodnotě, kterou jste nastavili. Kolem této hodnot by měla hodnota oscilovat.</p>")
+        plotGraph([offsetX,offsetY], PEInTime, "PE(t)", "<p>Celková potenciální energie částic.</p>")
+        plotGraph([offsetX,offsetY], KEInTime, "KE(t)", "<p>Celková kinetická energie částic.</p>")
+        plotGraph([offsetX,offsetY], EtotInTime, "Etot(t)", "<p>Součet celkové potenciální a celkové kinetické energie. V případě simulací **E nebo **H bude hodnota oscilovat kolem rovnovážné hodnoty.</p>")
+        plotGraph([offsetX,offsetY], pressInTime, "P(t)", "<p>Graf závislosti tlaku na čase. Tlak by se měla ustálit na rovnovážné hodnotě, popř. na hodnotě, kterou jste nastavili. Kolem této hodnot by měla hodnota oscilovat.</p>")
+        plotGraph([offsetX,offsetY], densInTime, "Hustota(t)", "<p>Graf závislosti hustoty na čase. Hutota by se měla ustálit na rovnovážné hodnotě, popř. na hodnotě, kterou jste nastavili. Pro simulace NP* bude hustota oscilovat kolek rovnovážné hodnoty.</p>")
         isInit = true
     }
     

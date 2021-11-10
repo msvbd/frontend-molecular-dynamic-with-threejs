@@ -210,7 +210,7 @@ function render() {
 
 function playStop() {
     let button = document.getElementById("button--playStop")
-    button.innerText = playSim ? "Play" : "Stop"
+    button.innerHTML = playSim ? "&#x25b6" : "&#x23f8"
     playSim = !playSim
 }
 
@@ -236,6 +236,12 @@ function playRender() {
         }
         //sleep(2000);
     } );
+}
+
+function stop() {
+    let button = document.getElementById("button--playStop")
+    button.innerHTML = "&#x25b6"
+    playSim = false
 }
 
 function stopRender() {

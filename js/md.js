@@ -414,7 +414,6 @@ function lj_f(rij, sig1, eps1, sig2, eps2) {
 }
 
 function lj_u(rij, sig1, eps1, sig2, eps2) {
-    //return MyWSModule.lj_u(rij, sig1, eps1, sig2, eps2)
     let sig = 0.5*(sig1 + sig2)
     let eps = Math.sqrt(eps1*eps2)
     const sigdr = sig**2/rij

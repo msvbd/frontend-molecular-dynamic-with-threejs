@@ -15,22 +15,28 @@ var dragObjects = [];
 var playSim = false;
 var MyWSModule
 
-function initAll() {
-    if(renderer) stopRender()
-    time = 0
-    readInputForm()
-    SimInit()
-    ThreeJSInit()
-    render()
-    OutputInit()
-    update(1)
-    printOutput()
-    playRender()
+function initSomething() {
+    readTempInputFrom()
+    readPressInputFrom()
 }
 
-function init_wasm(wasm) {
-    MyWSModule = wasm
+function initAll() {
+    console.log("init all");
+    if(renderer) stopRender()
+    time = 0
+
+    readInputForm()
+    SimInit()
+    ThreeJSInit()   // 
+    render()        // three js render
+    OutputInit()    
+    update(1)       // make one step
+    printOutput()
+    playRender()    // start rendering
 }
+
+output_init()
+main()
 
 // if WebGL is supported
 function main() {
@@ -44,7 +50,16 @@ function main() {
     
         // resize listener
         window.addEventListener( 'resize', onWindowResize );
-        document.getElementById('form--simSett').addEventListener( 'change', initAll )
+
+        //document.getElementById('form--simSett').addEventListener( 'change', initSomething )
+        document.getElementById('form__input--temp') .addEventListener('change', initSomething )
+        document.getElementById('form__input--press').addEventListener('change', initSomething )
+        Array.prototype.map.call(document.getElementsByClassName('newSimIfChange'), (el)=>{
+            el.addEventListener( 'change', initAll );
+        });
+
+        window.addEventListener("focus", playRender)
+        window.addEventListener("blur", stopRender)
     
     // if WebGL is not supported
     } else {
