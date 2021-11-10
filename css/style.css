@@ -17,55 +17,63 @@ body, html {
     align-items: start;
 }
     #form--simSett {
+        height: 100%;
         max-height: 100%;
-        overflow-y: scroll;
         grid-area: input;
-        display: grid;
-        grid-template-columns: 10rem 5rem;
+        padding: 0.2rem;
+/*         display: grid;
+        grid-template-columns: 10rem 5rem; */
         justify-items: stretch;
         align-items: stretch;
+        border-right: 1px solid black;
     }
-        #form--simSett label, button, div {
-            grid-column: 1 / span 2;
+        #form--simSett .div__input--radio {
+            display: inline-block;
+            width: 48%;
+            text-align: left;
         }
-        #form--simSett > div {
-            display: grid;
-            grid-template-columns: 10rem 5rem;
-            justify-items: stretch;
-            align-items: stretch;
-        }
-        #form--simSett > #form__input--molecules {
-            display: block;
-        }
-            #form__input--molecules > div {
-                display: grid;
-                grid-template-columns: auto;
-                border-bottom: 1px solid black;
-                margin: 0.5rem;
+            #form--simSett label {
                 padding: 0.2rem;
             }
-        #form--simSett > * {
-            margin-bottom: 1rem;
+            input:checked+label {
+                background-color: rgb(182, 234, 253);
+                border-radius: 0.5rem;
+            }
+        #form__input--molecules > div {
+            border-left: 3px solid black;
+            margin:  0.2rem 0  0 0.5rem ;
+            padding: 0rem 0rem;
         }
-
-    #outputs {
-        grid-area: output;
-    }
-        #outputs span {
-            display: inline-block;
-            width: 10rem;
+        #form--simSett * {
+            margin-bottom: 0.3rem;
+        }
+        #form--simSett > div {
+            border-bottom: 1px solid black;
+            min-height: 3rem;
+        }
+        #button--playStop {
+            width: 8rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 3px 3px 5px gray;
+            display: block;
+            margin: auto;
+            font-size: 150%;
+            background-color: rgb(182, 234, 253);
         }
 
     #graphs {
         width: 100%; height: 100%;
         grid-area: graphs;
         border-bottom: 1px solid black;
-        overflow-y: scroll;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
         padding: 0.5rem;
     }
         #graphs .graphs__div--graph {
+            scroll-snap-align: center;
             display: inline-block;
-            height: 150px;
+            height: 10.3rem;
             margin: 0.2rem;
             border: 1px solid gray;
             box-shadow: 2px 2px 5px gray;
@@ -83,7 +91,7 @@ body, html {
             transform: rotate(180deg);
             text-align: center;
             background-color: #ddd;
-            height: 145px;
+            height: 160px;
         }
 
     #canvas--wrapper {
@@ -92,31 +100,38 @@ body, html {
         overflow: hidden;
         cursor: crosshair !important;
     }
-        #canvas--wrapper canvas{
+        #canvas--wrapper canvas {
             cursor: crosshair !important;
         }
 /* help */
 #help {
     position: absolute;
-    left: 2.5%;
-    width: 95%;
-    height: 45%;
-    background-color:rgb(226, 247, 255);
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 98%;
+    background-color:rgba(226, 247, 255, 0.95);
     border: 2px solid skyblue;
     box-shadow: gray 5px 5px 5px;
     font-weight: normal;
-    font-size: 1rem;
+    font-size: 1.3rem;
+    line-height: 150%;
     color: black;
-    padding: 2rem;
-    z-index: 100;
+    padding: 1rem 2rem;
+    z-index:-1;
     transition: ease-in-out 0.25s;
     text-align: justify;
     opacity: 0;
-    visibility: hidden;
+    visibility: auto;
 }
-.top { top:2%; }
-.bottom { bottom:2%; }
-#help.visible { opacity: 1; visibility: visible; }
+#help::before {
+    content: "[X] Nápověda :)";
+    font-weight: bold;
+    font-size: 1.5rem;
+    width: 100%;
+    line-height: 5.0rem;
+}
+#help.visible { opacity: 1; visibility: visible; z-index: 100;}
 
 .helpIcon {
     background-color: rgb(173, 214, 253);
@@ -132,28 +147,3 @@ body, html {
     font-size: 1rem;
     font-weight: bold;
 }
-/* .helpText {
-    visibility: hidden;
-    opacity: 0;
-    background-color:rgb(226, 247, 255);
-    border: 2px solid skyblue;
-    box-shadow: gray 5px 5px 5px;
-    font-weight: normal;
-    font-size: 1rem;
-    color: black;
-    position: absolute;
-    top: 10px;
-    left: 2.5%;
-    width: 95%;
-    padding: 2rem;
-    z-index: 100;
-    transition: ease-in-out 0.25s;
-    text-align: justify;
-} */
-/* .helpIcon:hover #help {
-    opacity: 1; 
-} */
-/* .visible .helpText {
-    visibility: visible;
-    opacity: 1;
-} */

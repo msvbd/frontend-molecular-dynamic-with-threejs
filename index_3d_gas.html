@@ -20,24 +20,13 @@
 	<script src="js/help.js" defer></script>
 	<script src="js/useThreeJS.js" defer></script>
 	<script src="js/main.js" defer></script>
-	<script type="module" defer>
-		import MyWSInit, * as MyWSModule from "./wasm/pkg/md_wasm.js";
-		MyWSInit()
-		  .then(() => {
-			//MyWSModule.greet("WebAssembly")
-			init_wasm(MyWSModule)
-			output_init()
-			main()
-			console.log("WASM is ready")
-		  });
-	</script>
 </head>
 <body>
     
 	<div id="wrapper">
 		<form id="form--simSett">
 
-			<div>
+			<div class="newSimIfChange">
 				<h3>Rozměr
 					<span class="helpIcon">
 						<div class="helpText">
@@ -47,13 +36,19 @@
 						</div>
 					</span>
 				</h3>
-				<label for="dim_2d">2D</label>
-				<input type="radio" id="dim_2d" name="dimesnion" value="2d">
-				<label for="dim_3d">3D</label>
-				<input type="radio" id="dim_3d" name="dimesnion" value="3d" checked>
+				<div class="div__input--radio">
+					<input type="radio" id="dim_2d" name="dimesnion" value="2d">
+					<label for="dim_2d">2D</label>
+				</div>
+				
+				<div class="div__input--radio">
+					<input type="radio" id="dim_3d" name="dimesnion" value="3d" checked>
+					<label for="dim_3d">3D</label>
+				</div>
+				
 			</div>
 
-			<div>
+			<div class="newSimIfChange">
 				<h3>Statistický soubor
 					<span class="helpIcon">
 						<div class="helpText">
@@ -68,56 +63,96 @@
 						</div>
 					</span>
 				</h3>
-				<label for="ensemble_nve">NVE</label>
-				<input type="radio" name="ensemble" id="ensemble_nve" value="nve" checked>
-
-				<label for="ensemble_npt">NPT</label>
-				<input type="radio" name="ensemble" id="ensemble_npt" value="npt">
-
-				<label for="ensemble_npzt_wall">NPzT wall</label>
-				<input type="radio" name="ensemble" id="ensemble_npzt_wall" value="npzt_wall">
-
-				<label for="ensemble_nph">NPH</label>
-				<input type="radio" name="ensemble" id="ensemble_nph" value="nph">
-
-				<label for="ensemble_npzh_wall">NPH wall</label>
-				<input type="radio" name="ensemble" id="ensemble_npzh_wall" value="npzh_wall">
-
-				<label for="ensemble_nvt">NVT</label>
-				<input type="radio" name="ensemble" id="ensemble_nvt" value="nvt">
+				<div class="div__input--radio">
+					<input type="radio" name="ensemble" id="ensemble_nve" value="nve" checked>
+					<label for="ensemble_nve">NVE</label>
+				</div>
+				<div class="div__input--radio">
+					<input type="radio" name="ensemble" id="ensemble_npt" value="npt">
+					<label for="ensemble_npt">NPT</label>
+				</div>
+				<div class="div__input--radio">
+					<input type="radio" name="ensemble" id="ensemble_npzt_wall" value="npzt_wall">
+					<label for="ensemble_npzt_wall">NPzT + stěna</label>
+				</div>
+				<div class="div__input--radio">
+					<input type="radio" name="ensemble" id="ensemble_nph" value="nph">
+					<label for="ensemble_nph">NPH</label>
+				</div>
+				<div class="div__input--radio">
+					<input type="radio" name="ensemble" id="ensemble_npzh_wall" value="npzh_wall">
+					<label for="ensemble_npzh_wall">NPH + stěna</label>
+				</div>
+				<div class="div__input--radio">
+					<input type="radio" name="ensemble" id="ensemble_nvt" value="nvt">
+					<label for="ensemble_nvt">NVT</label>
+				</div>
 			</div>
 
 			<div id="form__input--temp">
-				<label for="range--temp">Teplota (-)
+				<h3><label for="range--temp">Teplota (-)
 					<span class="helpIcon">
 						<div class="helpText">
 							<p>Nastavte teplotu při které děj probýhá.</p>
+							<p>Teplota nemá žádné jednotky, protože zde jde hlavně o názornost. Můžete si představovat, že teplota 1 znamená "pokojovou teplotu".</p>
+							<p>Když budete teplotu snižovat uvidíte, že se částice začnou shlukovat tj. "zmrznou".</p>
 						</div>
 					</span>
-				</label>
+				</label></h3>
 				<input type="range"  min="0" max="5" step="0.1" name="temp__range" id="range--temp" oninput="temp__input.value=parseFloat(this.value)">
 				<input type="number" min="0" max="5" step="0.1" name="temp__input" id="input--temp" oninput="temp__range.value=parseFloat(this.value)">
 			</div>
 	
 			<div id="form__input--press">
-				<label for="range--press">Tlak (-)
+				<h3><label for="range--press">Tlak (-)
 					<span class="helpIcon">
 						<div class="helpText">
 							<p>Nastavte tlak při kterém děj probýhá.</p>
+							<p>Tlak nemá žádné jednotky, protože zde jde hlavně o názornost. Můžete si představovat, že teplota 1 znamená 1 Atm.</p>
+							<p>Když tlak zvýšíte, uvidíte, že částice jsou stlačovány.</p>
 						</div>
 					</span>
-				</label>
+				</label></h3>
 				<input type="range"  min="0" max="5" step="0.01" name="press__range" id="range--press" oninput="press__input.value=parseFloat(this.value)">
 				<input type="number" min="0" max="5" step="0.01" name="press__input" id="input--press" oninput="press__range.value=parseFloat(this.value)">
 			</div>
 
+			<div class="newSimIfChange">
+				<h3><label for="dens">Hustota (N/V)
+					<span class="helpIcon">
+						<div class="helpText">
+							<p>Nastavte hustotu simulovaného systému.</p>
+							<p>Hustota je zde chápána jako počet částiv "lomeno" velikost simulačního boxu. Nemá tedy jednotku kg/m3 nebo něco podobného.</p>
+							<p>Jednotka hustoty v našem případě nemá jednotky žádné, protože objem simulačního boxu pro názornost uvažujeme ve velikostech částic. To znamená, že délka hrany simulačního boxu 2 znamená, že se vedle sebe vejdou 2 částice. Proto hustotu v tomto případě lze chápat jako počet částic v simulaci "lomeno" počtu částic, které se simulačního boxu vejdou, pokud je budem skládat vedle sebe.</p>
+							<p>Délka hrany simulačního boxu a hustota jsou navzájem propojeny.</p>
+						</div>
+					</span>
+				</label></h3>
+				<input type="number" step="0.001" name="dens" id="input--dens"  oninput="onInputDens(event)">
+			</div>
 
-			<div id="form__input--molecules">
+			<div class="newSimIfChange">
+				<h3><label for="lbox">Délka hrany simulačního boxu (-)
+					<span class="helpIcon">
+						<div class="helpText">
+							<p>Nastavte velikost simulovaného systému.</p>
+							<p>Délka hrany simulačního boxu pro názornost uvažujeme ve velikostech částic. To znamená, že délka hrany simulačního boxu 2 znamená, že se vedle sebe vejdou 2 částice.</p>
+							<p>Délka hrany simulačního boxu a hustota jsou navzájem propojeny.</p>
+						</div>
+					</span>
+				</label></h3>
+				<input type="number" step="0.1" name="lbox" id="input--lbox" oninput="onInputLBox(event)">
+			</div>
+
+
+			<div id="form__input--molecules" class="newSimIfChange">
+				<h3>Částice:</h3>
 				<div>
 					<label for="nofp">Počet částic (-)
 						<span class="helpIcon">
 							<div class="helpText">
 								<p>Nastavte počet částic v simulovaném systému.</p>
+								<p>To je počet těch kuliček co tam létají.</p>
 							</div>
 						</span>
 					</label>
@@ -127,57 +162,36 @@
 						<span class="helpIcon">
 							<div class="helpText">
 								<p>Zvolte druh molekuly.</p>
+								<ul>
+									<li>Základní: je jednoduchý model s Lennard-Jonesovým potenciálem -> částice se zároveň odpuzují a zároveň přitahují. Konkrétně: když jsou blízko, tak se odpuzují a když jsou daleko, tak přitahují.</li>
+									<li>Pouze odpuzující se: jsou čásice, které se, jak název napovídá, pouze odpuzují. K odpuzování dochozí pouze, když jsou částice blízko sebe. Jinak na sebe nepůsobí. Pro "řídké" systému se systém blíží definici ideálního plynu.</li>
+								</ul>
 							</div>
 						</span>
 					</label>
+				
 					<select name="molecules" id="mol">
-						<option value="Simple" selected>Simple</option>
-						<option value="Repulsive_only">Repulsive only</option>
+						<option value="Simple" selected>Základní</option>
+						<option value="Repulsive_only">Pouze odpuzující se</option>
 						<!-- <option value="Dimer">Dimer</option>
 						<option value="Water">Water</option> -->
-						<option value="Ar">Ar</option>
+						<!-- <option value="Ar">Argon</option> -->
 						<!-- <option value="N2">Nitrogen</option>
 						<option value="CO2">Carbonedioxyd</option> -->
 					</select>
 				</div>
+
+				<!-- <button class="button--addMolecule" type="button" onclick="addMolecule()">Přidat molekulu/atom</button>  -->
+
 			</div>
-
-			<button type="button" onclick="addMolecule()">Přidat molekulu/atom</button> 
-
-			<label for="dens">Hustota (N/V)
-				<span class="helpIcon">
-					<div class="helpText">
-						<p>Nastavte hustotu simulovaného systému.</p>
-						<p>Velikost simulovaného systému a hustota jsou navzájem propojeny.</p>
-					</div>
-				</span>
-			</label>
-			<input type="number" step="0.001" name="dens" id="input--dens"  oninput="onInputDens(event)">
-
-			<label for="lbox">Velikost boxu (-)
-				<span class="helpIcon">
-					<div class="helpText">
-						<p>Nastavte velikost simulovaného systému.</p>
-						<p>Velikost simulovaného systému a hustota jsou navzájem propojeny.</p>
-					</div>
-				</span>
-			</label>
-			<input type="number" step="0.1" name="lbox" id="input--lbox" oninput="onInputLBox(event)">	
-
-			<button type="button" id="button--playStop" onclick="playStop()">Play</button> 
-			<button type="button" onclick="playRender()">Render</button> 
-			<button type="button" onclick="stopRender()">Stop Render</button>
+			
+			<div id="form__input--controlers">
+				<button type="button" id="button--playStop" onclick="playStop()">&#x25b6</button> 
+				<!-- <button type="button" onclick="playRender()">Render</button> 
+				<button type="button" onclick="stopRender()">Stop Render</button> -->
+			</div>
+			
 		</form>
-
-<!-- 		<div id="outputs">
-			<span id="output--teperature"></span>
-			<span id="output--PE"></span>
-			<span id="output--KE"></span>
-			<span id="output--Etot"></span>
-			<span id="output--PETail"></span>
-			<span id="output--PECoul"></span>
-			<span id="output--press"></span>
-		</div> -->
 
 		<div id="graphs">
 			<!-- svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="svg--graphs"></svg> -->
