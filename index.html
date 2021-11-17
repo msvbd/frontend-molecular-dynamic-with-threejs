@@ -9,12 +9,12 @@
 
     <title>Document</title>
 
-	<link rel="stylesheet" href="css/style.css" defer>
+	<link rel="stylesheet" href="css/style.css">
 
-    <script src="three.js/build/three.min.js" defer></script>
-    <script src="three.js/build/OrbitControls.js" defer></script>
-    <script src="three.js/build/DragControls.js" defer></script>
-    <script src="three.js/build/DragControlsBody.js" defer></script>
+    <script src="js/three.min.js" defer></script>
+    <script src="js/OrbitControls.js" defer></script>
+    <script src="js/DragControls.js" defer></script>
+    <script src="js/DragControlsBody.js" defer></script>
 
 <!-- 	<script src="js/md.js" defer></script>
 	<script src="js/svg.js" defer></script>
@@ -28,6 +28,12 @@
 <body>
     
 	<div id="wrapper">
+
+		<header>
+			<h1>Molekulární dynamika pro zábavu a názornost <a href="https://github.com/msvbd/frontend-molecular-dynamic-with-threejs" target="_blank"><img src="img/github_icon.svg" alt="github"></a></h1>
+			<p>Výtám Vás na stránce mého malého experimentu. Mím cílem bylo otestovat možnosti webového prohlížeče, jakožto nástroje pro výpočet a rendervoání výsledků simulace molekulární dynamiky. Rychlost simulací není nijak závratná, ale co byste chtěly běží to ve webovém prohlížeči :D K mému překvapení to funguje lépe než jsem čekal. S rozumným počtem částic a na rozumném počítači není třeba čekat příliž dlouho na výsledek. Stránku lze použít pro ilustraci některých fyzikálních aspoktů statistické fyziky, ovšem na přesná čísla nelze spoléhat. Při programování jsem některé aspekty simulace ošidit, aby rychlost byla rozumná. No na co čekáte stačí kliknout na tlačítko play. Přeji příjemnou zábavu :)</p>
+		</header>
+
 		<form id="form--simSett">
 
 			<div class="newSimIfChange">
