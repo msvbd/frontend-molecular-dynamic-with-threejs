@@ -1,3 +1,4 @@
 .vscode/*
 wasm/target/*
 wasm/pkg/*
+node_modules/*

@@ -21,6 +21,7 @@ function initSomething() {
 }
 
 function initAll() {
+    stop()
     console.log("init all");
     if(renderer) stopRender()
     time = 0

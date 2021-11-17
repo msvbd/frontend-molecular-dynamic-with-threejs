@@ -12,7 +12,7 @@ var tempAct = temp
 var KEAct = 0
 var PEAct = 0
 var PETailAct = 0
-var PECoulAct = 0
+//var PECoulAct = 0
 var densAct = dens
 var pressAct = press
 var vDist = [0]
@@ -41,7 +41,7 @@ function OutputInit() {
     KEAct = 0
     PEAct = 0
     PETailAct = 0
-    PECoulAct = 0
+    //PECoulAct = 0
     densAct = 0
     pressAct = 0
     vDist = [0]    
@@ -90,8 +90,8 @@ function printOutput() {
     let press = roundOutput(pressAct, 100000)
     let ke = roundOutput(KEAct, 100000)
     let pe = roundOutput(PEAct, 100000)
-    let peTail = roundOutput(PETailAct, 100000)
-    let peCoul = roundOutput(PECoulAct, 100000)
+    //let peTail = roundOutput(PETailAct, 100000)
+    //let peCoul = roundOutput(PECoulAct, 100000)
     let etot = roundOutput(KEAct+PEAct, 100000)
     let dens = roundOutput(densAct, 100000)
 

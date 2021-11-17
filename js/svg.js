@@ -202,7 +202,7 @@ const SvgClosure = function() {
         plotGraph([offsetX,offsetY], PEInTime, "PE(t)", "<p>Celková potenciální energie částic.</p>")
         plotGraph([offsetX,offsetY], KEInTime, "KE(t)", "<p>Celková kinetická energie částic.</p>")
         plotGraph([offsetX,offsetY], EtotInTime, "Etot(t)", "<p>Součet celkové potenciální a celkové kinetické energie. V případě simulací **E nebo **H bude hodnota oscilovat kolem rovnovážné hodnoty.</p>")
-        plotGraph([offsetX,offsetY], pressInTime, "P(t)", "<p>Graf závislosti tlaku na čase. Tlak by se měla ustálit na rovnovážné hodnotě, popř. na hodnotě, kterou jste nastavili. Kolem této hodnot by měla hodnota oscilovat.</p>")
+        plotGraph([offsetX,offsetY], pressInTime, "P(t)", "<p>Graf závislosti tlaku na čase. Tlak by se měla ustálit na rovnovážné hodnotě, popř. na hodnotě, kterou jste nastavili. Kolem této hodnot by měla hodnota oscilovat. POZOR: Pro tento případ se stěnou je výpočet tlaku špatně. Simulace se kvalitativně chová správně, ale dává špatné výsledky. Ovlivněny budou další veličiny(PE, hustota, ...).</p>")
         plotGraph([offsetX,offsetY], densInTime, "Hustota(t)", "<p>Graf závislosti hustoty na čase. Hutota by se měla ustálit na rovnovážné hodnotě, popř. na hodnotě, kterou jste nastavili. Pro simulace NP* bude hustota oscilovat kolek rovnovážné hodnoty.</p>")
         isInit = true
     }

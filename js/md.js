@@ -141,7 +141,7 @@ molTemplates = {
 function SimInit() {
     let Totvec = new THREE.Vector3();
     var Nl = Math.round(Math.pow(Np, 1.0/3.0))
-    if(dimension == "2d") Nl = Math.round(Math.pow(Np, 1.0/2.0))
+    if(dimension == "2d") Nl = Math.round(Math.pow(Np, 1.0/2.0))+1
     const rm = Nl*sig*2.0>Lbox.x ? Lbox.x/Nl : sig*2.0
     const Nlp = rm*Nl/2
     const typesArray = createTypesArray()
@@ -162,8 +162,8 @@ function SimInit() {
     let totQ = 0.0, q = 0.0
     if(dimension == "2d") {
         /* create molecules */
-        for (let i = 0; i < Nl; i++) {
-            for (let j = 0; j < Nl; j++) {
+        for (let j = 1; j < Nl; j++) {
+            for (let i = 0; i < Nl; i++) {
                 let vec = new THREE.Vector3(0,0,0).random()
                 vec.setZ(0.0).normalize()
                 vec.multiplyScalar(temp)
@@ -181,7 +181,7 @@ function SimInit() {
             if(Nact >= Np) break
         }
         /* create walls */
-        if(ensemble == "npzt_wall" || ensemble=="npzh_wall") {
+        if(ensemble.includes("_wall")) {
             let nwall = Math.ceil(Lbox.x)
             let dxWall = Lbox.x/nwall
             console.log(nwall, dxWall)
@@ -208,8 +208,8 @@ function SimInit() {
         }
     } else if(dimension == "3d") {
         /* create molecules */
-        for (let i = 0; i < Nl; i++) {
-            for (let j = 0; j < Nl; j++) {
+        for (let j = 0; j < Nl; j++) {
+            for (let i = 0; i < Nl; i++) {
                 for (let k = 0; k < Nl; k++) {
                     let vec = new THREE.Vector3(0,0,0).random()
                     vec.multiplyScalar(temp)
@@ -228,8 +228,9 @@ function SimInit() {
             }
             if(Nact >= Np) break
         }
+        console.log("Np / Nact", Np, Nact);
         /* create walls */
-        if(ensemble == "npzt_wall" || ensemble=="npzh_wall") {
+        if(ensemble.includes("_wall")) {
             let nwall = Math.ceil(Lbox.x)
             let dxWall = Lbox.x/nwall
             console.log(nwall**2, dxWall)
@@ -296,16 +297,15 @@ function getActTemp() {
     let totVSq = 0.0 // tot sum v^2
     for (let i = 0; i < particles.length; i++) { // loop throw molecules
         for (let j = 0; j < particles[i].atoms.length; j++) { // loop throw molecules
-            //totVSq += molecules[i].v.dot(molecules[i].v) // compute sum v^2
             totVSq += particles[i].atoms[j].v.lengthSq() // compute sum v^2
-            /* console.log(totVSq)
-            console.log(particles[i].atoms[j].v)
-            console.log(particles[i].atoms[j])
-            console.log("--------------------------------") */
         }
     }
     //console.log(particles.length)
-    totVSq /= (3*particles.length-3) // sum v^2 / DoF    
+    if(dimension === "2d") {
+        totVSq /= (2*particles.length-2) // sum v^2 / DoF    
+    } else {
+        totVSq /= (3*particles.length-3) // sum v^2 / DoF    
+    }
     //asdf
     return totVSq
 }
@@ -327,7 +327,7 @@ function ScaleVelocitiesThermostat() { // Scale Velocities Thermostat
 }
 
 function FrictionThermostat() { // Friction (Berendsen) Thermostat
-    let xi = Math.sqrt(1.0 + 0.01*(temp/tempAct - 1.0))
+    let xi = Math.sqrt(1.0 + 0.05*(temp/tempAct - 1.0))
     for (let i = 0; i < particles.length; i++) { // loop throw molecules
         for (let j = 0; j < particles[i].atoms.length; j++) { // loop throw molecules
             particles[i].atoms[j].v.multiplyScalar(xi)
@@ -365,12 +365,12 @@ function barostat() {
     let vol = Lbox.x*Lbox.y
     if(dimension == "3d") vol *= Lbox.z
     densAct = Np/vol
-    //console.log(densAct)
     return true
 }
 
 function FrictionBarostat() {  // Friction (Berendsen) Barostat
     let eta = Math.cbrt(1.0 - 0.0002*(press - pressAct))
+    if(dimension == "2d") eta = Math.sqrt(1.0 - 0.0002*(press - pressAct))
     Lbox.multiplyScalar(eta)
     simBox.setFromObject(createSimBox())
     for (let i = 0; i < molecules.length; i++) { // loop throw molecules
@@ -404,10 +404,16 @@ function adaptivTimeStep(rijsqMin, sigMix) {
     if(dt > 0.005) dt = 0.005
 }
 
+/* Mixing rools */
+function mixingRules(sig1, eps1, sig2, eps2) {
+    return [ Math.min(sig1, sig2), Math.sqrt(eps1*eps2) ] // min sqrtAve
+    //return [ 0.5*(sig1 + sig2), Math.sqrt(eps1*eps2) ] // Loretz Berholrz
+}
+
 /* Lennard-Jones interaction */
 function lj_f(rij, sig1, eps1, sig2, eps2) {
-    let sig = 0.5*(sig1 + sig2)
-    let eps = Math.sqrt(eps1*eps2)
+    let sig, eps
+    [ sig, eps ] = mixingRules(sig1, eps1, sig2, eps2)
     const sigdr = sig**2/rij
     findValuesForAdaptivTimeStepFuncion(rij, sig)
     return 24*eps*(2*sigdr**6 - sigdr**3)/rij
@@ -468,10 +474,11 @@ var pbc = pbc_normal
 function force() {
     const n = particles.length;
     const nm = molecules.length;
-    const nw = wall.length;
+    const nw = wallUp.length;
     let i, j, ip, jp, rij, rcutljsq, fc, rijsq;
     let vij
     let tmp, angle, dist
+    let pressTensor = [0.0, 0.0, 0.0]
 
     /* Zero acceleration */
     for (i = 0; i < nm; i++) {
@@ -479,12 +486,19 @@ function force() {
             molecules[i].atoms[j].a.set(0,0,0)
         }
     }
+    
     if(wallUp[0]) {
-        wallUp[0].atoms[0].a.set(0, -press*Lbox.x**2 ,0)
-        //console.log(wallUp[0].atoms[0].a)
+        if(dimension == "2d") {
+            wallUp[0].atoms[0].a
+                .add(new THREE.Vector3().set(0, -press*Lbox.x    ,0))
+        }else{
+            wallUp[0].atoms[0].a
+                .add(new THREE.Vector3().set(0, -press*Lbox.x**2 ,0))
+        }
     }
+
     if(wallBot[0]) wallBot[0].atoms[0].a.set(0,0,0)
-    for (i = 1; i < wallUp.length; i++) {
+    for (i = 1; i < nw; i++) {
         wallUp[i].atoms[0].a = wallUp[0].atoms[0].a
         wallBot[i].atoms[0].a = wallBot[0].atoms[0].a
     }
@@ -492,7 +506,7 @@ function force() {
 
     /* Compute pair forces */
     PEAct = 0
-    PECoulAct = 0
+    //PECoulAct = 0
     pressAct = 0
     for (i = 0; i < nm; i++) {
         for (ip = 0; ip < particles[i].atoms.length; ip++) {
@@ -500,7 +514,8 @@ function force() {
                 for (jp = 0; jp < particles[j].atoms.length; jp++) {
                     rij = new THREE.Vector3().subVectors(particles[i].atoms[ip].r , particles[j].atoms[jp].r)
                     rij.sub( pbc(rij));
-                    rcutljsq = ((particles[i].atoms[ip].rcut + particles[j].atoms[jp].rcut)*0.5)**2
+                    //rcutljsq = ((particles[i].atoms[ip].rcut + particles[j].atoms[jp].rcut)*0.5)**2
+                    rcutljsq = Math.min(particles[i].atoms[ip].rcut, particles[j].atoms[jp].rcut)
                     rijsq = rij.lengthSq()
 
                     /* vij = new THREE.Vector3().subVectors(particles[i].atoms[ip].v , particles[j].atoms[jp].v)
@@ -512,18 +527,24 @@ function force() {
                     tmp += coul_f(particles[i].atoms[ip].q, particles[j].atoms[jp].q, rijsq)
 
                     PEAct += lj_u(rijsq, particles[i].atoms[ip].sig, particles[i].atoms[ip].eps, particles[j].atoms[jp].sig, particles[j].atoms[jp].eps)
-                    PECoulAct += coul_u(particles[i].atoms[ip].q, particles[j].atoms[jp].q, rijsq)
+                    //PECoulAct += coul_u(particles[i].atoms[ip].q, particles[j].atoms[jp].q, rijsq)
                     PEAct += coul_u(particles[i].atoms[ip].q, particles[j].atoms[jp].q, rijsq)
                     fc = rij.normalize().multiplyScalar(tmp)
 
                     particles[i].atoms[ip].a.add(fc.multiplyScalar(1))
                     particles[j].atoms[jp].a.add(fc.multiplyScalar(-1))
-                    pressAct += rij.dot(fc)
+                    if(j<nm) {
+                        pressAct += rij.dot(fc)
+                    }
                 }
             }
+
+            /* pressTensor[0] = particles[i].atoms[ip].r.x * particles[i].atoms[ip].a.x + particles[i].atoms[ip].v.x**2
+            pressTensor[1] = particles[i].atoms[ip].r.y * particles[i].atoms[ip].a.y + particles[i].atoms[ip].v.y**2
+            pressTensor[2] = particles[i].atoms[ip].r.z * particles[i].atoms[ip].a.z + particles[i].atoms[ip].v.z**2 */
         }
     }
-    for (i = 0; i < wallBot.length; i++) {
+/*     for (i = 0; i < wallBot.length; i++) {
         for (ip = 0; ip < wallBot[i].atoms.length; ip++) {
             for (j = 0; j < wallUp.length; j++) {
                 for (jp = 0; jp < wallUp[j].atoms.length; jp++) {
@@ -532,8 +553,8 @@ function force() {
                     rcutljsq = ((wallBot[i].atoms[ip].rcut + wallUp[j].atoms[jp].rcut)*0.5)**2
                     rijsq = rij.lengthSq()
 
-                    /* vij = new THREE.Vector3().subVectors(wallBot[i].atoms[ip].v , wallUp[j].atoms[jp].v)
-                    tmp = dpdThermostat(rij.length(), rij.dot(vij)) */
+                    //vij = new THREE.Vector3().subVectors(wallBot[i].atoms[ip].v , wallUp[j].atoms[jp].v)
+                    //tmp = dpdThermostat(rij.length(), rij.dot(vij))
 
                     if(rijsq > rcutsq || rijsq > rcutljsq) continue
 
@@ -541,7 +562,7 @@ function force() {
                     tmp += coul_f(wallBot[i].atoms[ip].q, wallUp[j].atoms[jp].q, rijsq)
 
                     PEAct += lj_u(rijsq, wallBot[i].atoms[ip].sig, wallBot[i].atoms[ip].eps, wallUp[j].atoms[jp].sig, wallUp[j].atoms[jp].eps)
-                    PECoulAct += coul_u(wallBot[i].atoms[ip].q, wallUp[j].atoms[jp].q, rijsq)
+                    //PECoulAct += coul_u(wallBot[i].atoms[ip].q, wallUp[j].atoms[jp].q, rijsq)
                     PEAct += coul_u(wallBot[i].atoms[ip].q, wallUp[j].atoms[jp].q, rijsq)
                     fc = rij.normalize().multiplyScalar(tmp)
                     wallBot[i].atoms[ip].a.add(fc.multiplyScalar(1))
@@ -550,10 +571,10 @@ function force() {
                 }
             }
         }
-    }
+    } */
 
     /* compute bonds & bends */
-    for (i = 0; i < nm; i++) {
+/*     for (i = 0; i < nm; i++) {
         if(molecules[i].bonds) {
             for (ib = 0; ib < molecules[i].bonds.length; ib++) {
                 rij = new THREE.Vector3().subVectors(molecules[i].atoms[molecules[i].bonds[ib].id1].r , molecules[i].atoms[molecules[i].bonds[ib].id2].r)
@@ -590,29 +611,76 @@ function force() {
                 pressAct += rij.dot(fc)
             }
         }
+    } */
+
+/* *************************************************************** */   
+/*     if(wallUp[0]) {
+        wallUp[0].atoms[0].a.set(0, 0 ,0)
     }
+    if(wallBot[0]) wallBot[0].atoms[0].a.set(0,0,0)
+    for (i = 1; i < wallUp.length; i++) {
+        wallUp[i].atoms[0].a = wallUp[0].atoms[0].a
+        wallBot[i].atoms[0].a = wallBot[0].atoms[0].a
+    } */
+/* *************************************************************** */
+
+    if(wallUp[0]) wallUp[0].atoms[0].a.divideScalar(nw)
 
     /* compute potential energy */
     PETailAct = 8.0/3.0*dens*Math.PI*eps*(sig**3)*(((sig/rcut)**9)/3.0 - (sig/rcut)**3)
     PEAct += PETailAct
     PEAct /= n
-    PECoulAct /= n
+    //PECoulAct /= n
+
+    if(wallUp[0]) {
+        let vol = (wallUp[0].atoms[0].r.y - wallBot[0].atoms[0].r.y) * Lbox.x
+        if(dimension === "3d") vol *= Lbox.z
+        densAct = Np/vol   
+    }
 
     /* compute pressure */
     if(dimension == "2d") {
         pressAct /= 2.0*Lbox.x*Lbox.y
+        /* pressTensor[0] /= Lbox.x*Lbox.y*2
+        pressTensor[1] /= Lbox.x*Lbox.y*2
+        pressTensor[2] /= Lbox.x*Lbox.y*2 */
     } else {
+        //pressAct = nm*(pressTensor[0]+pressTensor[1]+pressTensor[2])/(3.0*Lbox.x*Lbox.y*Lbox.z)
+        //pressAct /= 3.0*Lbox.x*Lbox.y*Lbox.z*(nm-1)
         pressAct /= 3.0*Lbox.x*Lbox.y*Lbox.z
+        /* pressTensor[0] /= Lbox.x*Lbox.y*Lbox.z*3
+        pressTensor[1] /= Lbox.x*Lbox.y*Lbox.z*3
+        pressTensor[2] = 0.0 */
     }
-    pressAct += 16.0/3.0*(dens**2)*Math.PI*eps*(sig**3)*(((sig/rcut)**9)*2.0/3.0 - (sig/rcut)**3) // tail
-    pressAct += dens*temp // id gas part
+
+    //console.log("PRESS", something/nsomething)
+
+    pressAct += 16.0/3.0*(densAct**2)*Math.PI*eps*(sig**3)*(((sig/rcut)**9)*2.0/3.0 - (sig/rcut)**3) // tail
+    //pressAct += dens*temp // id gas part
+    pressAct += densAct*tempAct // id gas part
+
     return true
 }
 
+function crashTest() {
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = 0; j < particles[i].atoms.length; j++) {
+            if( isNaN(particles[i].atoms[j].r.x) ||
+                isNaN(particles[i].atoms[j].r.y) ||
+                isNaN(particles[i].atoms[j].r.z) ||
+                !isFinite(particles[i].atoms[j].r.x) ||
+                !isFinite(particles[i].atoms[j].r.y) ||
+                !isFinite(particles[i].atoms[j].r.z)) {
+                console.error("Simulation Error");
+                return true
+            }
+        }
+    }
+    return false
+}
 
 function newPosition() {
     const n = particles.length;
-    const nw = wall.length;
     let i,j;
 
     for (i = 0; i < n; i++) {
@@ -662,7 +730,24 @@ function newVelocity() {
 
     computeVDist(vSizes)
     tempAct = getActTemp()
-    if(ensemble=="nvt" || ensemble=="npt") thermostat()
+    if(ensemble=="nvt" || ensemble=="npt" || ensemble=="npzt_wall") thermostat()
+    //if(ensemble=="nvt" || ensemble=="npt") thermostat()
+}
+
+function zeroTotalMomentum() {
+    let Totvec = new THREE.Vector3();
+    Totvec.divideScalar(molecules.length)
+    for (let i = 0; i < molecules.length; i++) {
+        for (let j = 0; j < molecules[i].atoms.length; j++) {
+            Totvec.add(molecules[i].atoms[j].v)
+        }
+    }
+    Totvec.divideScalar(molecules.length)
+    for (let i = 0; i < molecules.length; i++) {
+        for (let j = 0; j < molecules[i].atoms.length; j++) {
+            molecules[i].atoms[j].v.sub(Totvec)
+        }
+    }
 }
 
 function computeVDist(vSizes) {

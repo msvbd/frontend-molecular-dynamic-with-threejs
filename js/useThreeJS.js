@@ -197,6 +197,13 @@ function update(n) {
         force()
         newVelocity()
         if(timeSteps%100 == 0) {
+            //zeroTotalMomentum()
+            if(crashTest()) {
+                stopRender()
+                stop()
+                initAll()
+                return
+            }
             adaptivTimeStep(rijsqMin, sigMixMin)
             rijsqMin=1
             sigMixMin=1
@@ -245,7 +252,6 @@ function stop() {
 }
 
 function stopRender() {
-    stop()
     renderer.setAnimationLoop( null );
     console.log("stop");
 }

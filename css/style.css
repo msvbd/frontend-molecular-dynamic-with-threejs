@@ -51,15 +51,21 @@ body, html {
             border-bottom: 1px solid black;
             min-height: 3rem;
         }
-        #button--playStop {
-            width: 8rem;
+        #form__input--controlers button {
+            width: 7rem;
             height: 2.5rem;
             border-radius: 0.5rem;
             box-shadow: 3px 3px 5px gray;
-            display: block;
+            display: inline-block;
             margin: auto;
             font-size: 150%;
             background-color: rgb(182, 234, 253);
+        }
+        #form__input--controlers #button--playStop {
+            width: 8rem;
+        }
+        #form__input--controlers #button--reload {
+            width: 3rem; 
         }
 
     #graphs {
