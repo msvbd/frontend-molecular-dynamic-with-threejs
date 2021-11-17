@@ -1,0 +1,23 @@
+{
+  "name": "threejs_md_sandbox",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "unglify": "uglifyjs ./js/md.js ./js/svg.js ./js/output.js ./js/forms.js ./js/help.js ./js/useThreeJS.js ./js/main.js  --compress --mangle --output app.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msvbd/frontend-molecular-dynamic-with-threejs.git"
+  },
+  "author": "Martin Svoboda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/msvbd/frontend-molecular-dynamic-with-threejs/issues"
+  },
+  "homepage": "https://github.com/msvbd/frontend-molecular-dynamic-with-threejs#readme",
+  "dependencies": {
+    "uglify-js": "^3.14.3"
+  }
+}
